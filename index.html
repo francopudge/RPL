@@ -132,41 +132,52 @@
         /* --- RESPONSIVE MOBILE OPTIMIZATION --- */
         @media (max-width: 600px) {
             body {
-                padding: 120px 10px 80px 10px; 
+                padding: 110px 10px 70px 10px; 
             }
 
             header {
-                flex-direction: column;
-                padding: 10px 5px;
+                flex-wrap: wrap; 
+                padding: 8px 5px;
+                justify-content: space-around;
             }
 
             .header-logo {
-                display: none; /* Sembunyikan logo samping di HP agar hemat ruang */
+                width: 25px; /* Logo tetap ada tapi mengecil */
+                margin: 0 8px;
+                display: block !important;
+            }
+
+            header b {
+                font-size: 0.7em;
             }
 
             header span {
-                font-size: 14px;
-                margin: 5px 0;
+                font-size: 13px;
+                width: 100%; /* Judul turun ke bawah agar rapi */
+                order: 3;
+                margin-top: 8px;
+                padding-top: 5px;
+                border-top: 1px solid rgba(255,255,255,0.1);
             }
 
             #music-control {
-                margin-right: 0;
-                font-size: 12px;
+                margin-right: 5px;
+                font-size: 11px;
+                padding: 4px 10px;
             }
 
             .container {
-                padding: 15px;
+                padding: 20px 15px;
                 margin: 10px 0;
             }
 
-            /* Membuat baris UTS/UAS menjadi menumpuk */
             .input-row {
                 flex-direction: column !important;
                 gap: 0 !important;
             }
 
             table {
-                font-size: 12px;
+                font-size: 11px;
             }
 
             th, td {
@@ -188,13 +199,13 @@
 
     <header>
         <div style="display: flex; align-items: center;">
-            <img src="unpam.png" class="header-logo" alt="Logo" onerror="this.style.display='none'">
-            <b style="font-size: 0.8em;">TEKNIK INFORMATIKA</b>
+            <img src="unpam.png" class="header-logo" alt="Logo" onerror="this.src='https://via.placeholder.com/35?text=U'">
+            <b>TEKNIK INFORMATIKA</b>
         </div>
         <span style="letter-spacing: 1px; font-weight: bold;">SISTEM INPUT NILAI</span>
         <div style="display: flex; align-items: center;">
             <button id="music-control" onclick="toggleMusic()">🎵 Play</button>
-            <img src="unpam.png" class="header-logo" alt="Logo" onerror="this.style.display='none'">
+            <img src="unpam.png" class="header-logo" alt="Logo" onerror="this.src='https://via.placeholder.com/35?text=U'">
         </div>
     </header>
 
