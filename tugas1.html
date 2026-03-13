@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Input Nilai Mahasiswa - UNPAM</title>
+    <link rel="icon" type="image/png" href="unpam.png">
+    
+    <style>
+        /* LOADING SCREEN STYLING */
+        #loader-wrapper {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: #2c3e50;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            transition: opacity 0.5s ease, visibility 0.5s;
+        }
+        #progress-bar {
+            width: 250px;
+            height: 12px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            margin-top: 20px;
+            overflow: hidden;
+            border: 1px solid #3498db;
+        }
+        #progress-fill {
+            width: 0%;
+            height: 100%;
+            background: #3498db;
+            box-shadow: 0 0 10px #3498db;
+            transition: width 0.1s linear;
+        }
+
+        /* DASAR */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 100px 20px 80px 20px; 
+            background-color: #f0f2f5;
+            min-height: 100vh;
+        }
+
+        /* HEADER & FOOTER FIXED */
+        header, footer {
+            position: fixed;
+            left: 0; width: 100%;
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            z-index: 1000;
+        }
+        header { 
+            top: 0; 
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .header-logo { width: 35px; margin: 0 15px; }
+        
+        footer { 
+            bottom: 0; 
+            font-size: 0.85em; 
+            padding: 15px 0; 
+            border-top: 3px solid #3498db;
+        }
+
+        /* TOMBOL & FORM */
+        #music-control {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 1px solid #3498db;
+            padding: 6px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-right: 15px;
+            transition: 0.3s;
+            font-size: 14px;
+        }
+        #music-control:hover { background: #3498db; }
+
+        .container { 
+            max-width: 800px; 
+            margin: 20px auto; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 15px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+            text-align: center;
+        }
+
+        .form-group { text-align: left; margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; color: #34495e; }
+        input { 
+            width: 100%; padding: 12px; 
+            border: 1px solid #ddd; border-radius: 8px; 
+            box-sizing: border-box; font-size: 15px;
+        }
+
+        .img-mid {
+            width: 80px; 
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+        
+        .btn-add { 
+            width: 100%; padding: 14px; 
+            background: #3498db; color: white; 
+            border: none; border-radius: 8px; 
+            cursor: pointer; font-size: 16px; font-weight: bold;
+            transition: 0.3s; margin-top: 10px;
+        }
+        .btn-add:hover { background: #2980b9; transform: translateY(-2px); }
+
+        /* TABEL HASIL */
+        .result-container { margin-top: 30px; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; background: white; margin-bottom: 20px; min-width: 500px; }
+        th, td { padding: 12px; border: 1px solid #eee; text-align: center; }
+        th { background: #34495e; color: white; }
+        .grade-box { padding: 5px 10px; border-radius: 5px; color: white; font-weight: bold; }
+        .btn-delete { background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; }
+
+        /* --- RESPONSIVE MOBILE OPTIMIZATION --- */
+        @media (max-width: 600px) {
+            body {
+                padding: 120px 10px 80px 10px; 
+            }
+
+            header {
+                flex-direction: column;
+                padding: 10px 5px;
+            }
+
+            .header-logo {
+                display: none; /* Sembunyikan logo samping di HP agar hemat ruang */
+            }
+
+            header span {
+                font-size: 14px;
+                margin: 5px 0;
+            }
+
+            #music-control {
+                margin-right: 0;
+                font-size: 12px;
+            }
+
+            .container {
+                padding: 15px;
+                margin: 10px 0;
+            }
+
+            /* Membuat baris UTS/UAS menjadi menumpuk */
+            .input-row {
+                flex-direction: column !important;
+                gap: 0 !important;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 8px 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader-wrapper">
+        <img src="unpam.png" alt="Logo" width="80" onerror="this.src='https://via.placeholder.com/80?text=UNPAM'">
+        <h2 style="margin-top: 15px; letter-spacing: 2px;">UNPAM</h2>
+        <div id="progress-text">0%</div>
+        <div id="progress-bar">
+            <div id="progress-fill"></div>
+        </div>
+    </div>
+
+    <header>
+        <div style="display: flex; align-items: center;">
+            <img src="unpam.png" class="header-logo" alt="Logo" onerror="this.style.display='none'">
+            <b style="font-size: 0.8em;">TEKNIK INFORMATIKA</b>
+        </div>
+        <span style="letter-spacing: 1px; font-weight: bold;">SISTEM INPUT NILAI</span>
+        <div style="display: flex; align-items: center;">
+            <button id="music-control" onclick="toggleMusic()">🎵 Play</button>
+            <img src="unpam.png" class="header-logo" alt="Logo" onerror="this.style.display='none'">
+        </div>
+    </header>
+
+    <audio id="bg-music" loop>
+        <source src="hymn.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="container">
+        <img src="unpam.png" class="img-mid" alt="Logo Center" onerror="this.src='https://via.placeholder.com/80?text=UNPAM'">
+        
+        <div class="form-group">
+            <label>NIM Mahasiswa</label>
+            <input type="text" id="nim" placeholder="Contoh: 211011400xxx">
+        </div>
+
+        <div class="form-group">
+            <label>Nama Lengkap</label>
+            <input type="text" id="nama" placeholder="Masukkan nama mahasiswa">
+        </div>
+
+        <div class="input-row" style="display: flex; gap: 15px;">
+            <div class="form-group" style="flex: 1;">
+                <label>Nilai UTS</label>
+                <input type="number" id="uts" min="0" max="100" oninput="vLimit(this)">
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <label>Nilai UAS</label>
+                <input type="number" id="uas" min="0" max="100" oninput="vLimit(this)">
+            </div>
+        </div>
+
+        <button class="btn-add" onclick="proses()">Simpan ke Tabel</button>
+
+        <div class="result-container" id="hasilContainer" style="display: none;">
+            <table id="tabelMahasiswa">
+                <thead>
+                    <tr>
+                        <th>NIM</th>
+                        <th>Nama</th>
+                        <th>UTS</th>
+                        <th>UAS</th>
+                        <th>Rata</th>
+                        <th>Grade</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer>&copy; 2026 Universitas Pamulang</footer>
+
+    <script>
+        // LOGIKA LOADING SCREEN
+        window.addEventListener('load', function() {
+            let count = 0;
+            const fill = document.getElementById('progress-fill');
+            const text = document.getElementById('progress-text');
+            const loader = document.getElementById('loader-wrapper');
+            
+            const interval = setInterval(() => {
+                count += Math.floor(Math.random() * 15) + 5; 
+                if (count > 100) count = 100;
+                
+                fill.style.width = count + "%";
+                text.innerText = count + "%";
+                
+                if (count === 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        loader.style.opacity = '0';
+                        loader.style.visibility = 'hidden';
+                    }, 400);
+                }
+            }, 50);
+        });
+
+        // KONTROL MUSIK
+        const audio = document.getElementById('bg-music');
+        const mBtn = document.getElementById('music-control');
+        function toggleMusic() {
+            if (audio.paused) {
+                audio.play().catch(e => alert("Klik di mana saja pada layar dulu untuk memutar musik (kebijakan browser)."));
+                mBtn.innerText = "⏸ Pause";
+            } else {
+                audio.pause();
+                mBtn.innerText = "🎵 Play";
+            }
+        }
+
+        // VALIDASI ANGKA (0-100)
+        function vLimit(i) {
+            if (i.value > 100) i.value = 100;
+            if (i.value < 0) i.value = 0;
+        }
+
+        // PROSES HITUNG & INPUT
+        function proses() {
+            const nim = document.getElementById('nim').value;
+            const nama = document.getElementById('nama').value;
+            const utsInput = document.getElementById('uts').value;
+            const uasInput = document.getElementById('uas').value;
+            
+            if (!nim || !nama || utsInput === "" || uasInput === "") {
+                alert("Harap isi semua kolom!"); return;
+            }
+
+            const uts = parseFloat(utsInput);
+            const uas = parseFloat(uasInput);
+            const rata = (uts + uas) / 2;
+            let g = "", c = "";
+            
+            if (rata >= 80) { g="A"; c="#27ae60"; }
+            else if (rata >= 70) { g="B"; c="#2ecc71"; }
+            else if (rata >= 60) { g="C"; c="#f1c40f"; }
+            else if (rata >= 50) { g="D"; c="#e67e22"; }
+            else { g="E"; c="#e74c3c"; }
+
+            document.getElementById('hasilContainer').style.display = 'block';
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${nim}</td>
+                <td style="text-align:left">${nama}</td>
+                <td>${uts}</td><td>${uas}</td>
+                <td>${rata.toFixed(1)}</td>
+                <td><span class="grade-box" style="background:${c}">${g}</span></td>
+                <td><button class="btn-delete" onclick="hapus(this)">Hapus</button></td>
+            `;
+            document.getElementById('tabelBody').appendChild(tr);
+            
+            // Reset input form
+            document.getElementById('nim').value = ""; document.getElementById('nama').value = "";
+            document.getElementById('uts').value = ""; document.getElementById('uas').value = "";
+        }
+
+        // HAPUS DATA
+        function hapus(b) {
+            if(confirm("Apakah Anda yakin ingin menghapus data ini?")) {
+                b.closest('tr').remove();
+                if(document.getElementById('tabelBody').rows.length === 0) 
+                    document.getElementById('hasilContainer').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
